@@ -39,17 +39,8 @@ export default class PizzaTranslator extends Component {
       <View style={styles.mainCotainer}>
 
         <View style={styles.cover}>
-          <Text style={styles.homeText}>DomoticARG</Text>
+          <Text style={styles.homeText}>DIEGO PUTO</Text>
           <Text style={styles.homeSubTitle}>v0.1</Text>
-        </View>
-
-        <View style={styles.ip}>
-          <Text style={ styles.lightText }> Ingrese la IP del dispositivo</Text>
-          <TextInput
-            style={{height: 40, borderColor: 'white', color:'white', borderWidth: 1, textAlign: 'center'}}
-            onChangeText={(ip) => this.setState({ip})}
-            value={this.state.ip}
-          />
         </View>
 
         <View style={styles.luz}>
