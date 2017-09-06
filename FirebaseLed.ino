@@ -1,20 +1,14 @@
 #include <ESP8266WiFi.h>
 #include <FirebaseArduino.h>
 
-const char* ssid = "Fibertel WiFi976 2.4GHz";
-const char* password = "0043499762";
-
-//const char* ssid = "DiegoL";
-//const char* password = "diego0610";
+const char* ssid = "ENTER YOUT SSID HERE";
+const char* password = "ENTER YOUR WIFI PASS HERE";
 
 // Set these to run example.
-#define FIREBASE_HOST "tfi-domoticarg.firebaseio.com"
-#define FIREBASE_AUTH "Q5lzKMvIgkLB9zOLRJlvD69yjhHKbQcI9KQB42S2"
-#define WIFI_SSID "Fibertel WiFi976 2.4GHz"
-#define WIFI_PASSWORD "0043499762"
+#define FIREBASE_HOST " .firebaseio.com"
+#define FIREBASE_AUTH ""
 
-
-int ledPin = 13; // GPIO13
+int ledPin = 13;
 WiFiServer server(80);
  
 void setup() {
