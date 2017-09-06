@@ -1,37 +1,65 @@
 import React, { Component } from 'react';
-import { StyleSheet, AppRegistry, Text, TextInput, View, Button, Alert, Switch,Image } from 'react-native';
+import { StyleSheet, AppRegistry, Text, TextInput, View, Button, Alert, Switch, Image } from 'react-native';
+import * as firebase from 'firebase';
 
-export default class PizzaTranslator extends Component {
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDtRMc6MpxqLEY80vZZV7N5oSqA1wKg5M8",
+  databaseURL: "tfi-domoticarg.firebaseio.com"
+};
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+export default class DomoticApp extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      ip: '192.168.0.24', 
-      statusMessage: '' 
-    };
   }
 
-  requestLed(num, prender) {
-    var URIReq = "";
+  gotUserData(snapshot){
+    snapshot.forEach(userSnapshot => {
+      var k = userSnapshot.key;
+      var id = userSnapshot.val().AssignedID;
+      var name = userSnapshot.val().Name;
+      ref.child("teams").child(id).once("value", teamsSnapshot => {
+        teamsSnapshot.forEach(teamSnapshot => {
+          var teamKey = teamSnapshot.key;
+          teamSnapshot.forEach(teamProp => {
+            var prop = teamProp.key;
+            var val = teamProp.val();
+            console.log(k+" "+name+" "+id+": "+teamKey+", "+prop+"="+val);
+          });
+        });
+      });
+    })}
 
-    if (prender)
-      URIReq = "http://" + this.state.ip + "/light" + num + "on";
-    else
-      URIReq = "http://" + this.state.ip + "/light" + num + "off";
+  requestLed(pin, value) {
+    var rootRef = firebase.database().ref();
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", URIReq, true);
-    xhr.setRequestHeader('Cache-Control', 'no-cache');
-    xhr.timeout = 5000; // time in milliseconds
-    xhr.onload = function () {
-      // Request finished. Do processing here.
-      console.log("Call " + URIReq + " OK");
-    };
+    var urlRef = rootRef.child("disp1");
+    urlRef.once("value", function(snapshot) {
+      snapshot.forEach(function(child) {
 
-    xhr.ontimeout = function (e) {
-      console.log("Call " + URIReq + " time out..");
-      xhr.abort();
-    };
-    xhr.send();
+        if(child.key == "luzPin"){
+          console.log(child.key+": "+child.val());
+          firebase.database().ref(userMobilePath).set({
+            luzPin: value
+          });       
+        }
+      });
+    });
+
+    
+
+
+    if (pin == 'luzPin') {
+      return firebase.database().ref(userMobilePath).set({
+        luzPin: value
+      })
+    }
+    else if(pin == 'luzPin2'){
+      return firebase.database().ref(userMobilePath).set({
+        luzPin2: value
+      })
+    }
   };
 
   render() {
@@ -39,7 +67,7 @@ export default class PizzaTranslator extends Component {
       <View style={styles.mainCotainer}>
 
         <View style={styles.cover}>
-          <Text style={styles.homeText}>DIEGO PUTO</Text>
+          <Text style={styles.homeText}>DomoticARG</Text>
           <Text style={styles.homeSubTitle}>v0.1</Text>
         </View>
 
@@ -48,8 +76,7 @@ export default class PizzaTranslator extends Component {
           <Button
             color="#27ae60"
             onPress={() => {
-              this.setState({ statusMessage: 'activado' });
-              this.requestLed(1, true);
+              this.requestLed("luzPin", 1);
             }}
             title="Encender"
           />
@@ -58,13 +85,12 @@ export default class PizzaTranslator extends Component {
             color="#c0392b"
             onPress={() => {
               this.setState({ statusMessage: 'apagado' });
-              this.requestLed(1, false);
+              this.requestLed("luzPin", 0);
             }}
             title="Apagar"
           />
-          <Text style={styles.buttonOff}>{this.state.statusMessage}</Text>
         </View>
-        
+
         <View style={styles.luz}>
           <Text style={styles.lightText}>
             Luz 02
@@ -72,54 +98,50 @@ export default class PizzaTranslator extends Component {
           <Button
             color="#27ae60"
             onPress={() => {
-              this.setState({ statusMessage2: 'activado' });
-              this.requestLed(2, true);
+              this.requestLed("luzPin2", 1);
             }}
             title="Encender"
           />
-          <Button 
-          color="#c0392b" 
-            onPress={() => { 
-              this.setState({ statusMessage2: 'apagado' });
-              this.requestLed(2, false);
+          <Button
+            color="#c0392b"
+            onPress={() => {
+              this.requestLed("luzPin2", 0);
             }}
             title="Apagar"
           />
-          <Text>{this.state.statusMessage2}</Text>
         </View>
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
-  mainCotainer:{ 
-    paddingTop: 100, 
+  mainCotainer: {
+    paddingTop: 100,
     flex: 1,
-    alignItems:'center', 
-    flexDirection: 'column', 
-    backgroundColor:"#34495e"
+    alignItems: 'center',
+    flexDirection: 'column',
+    backgroundColor: "#34495e"
   },
-  homeSubTitle:{
+  homeSubTitle: {
     fontSize: 15,
     color: 'white'
   },
-  ip:{
+  ip: {
     marginBottom: 50
   },
-  cover:{
+  cover: {
     marginBottom: 50
   },
   button: {
     flex: 1
   },
-  homeText:{
+  homeText: {
     fontSize: 25,
     color: 'white'
   },
   luz: {
-    width:300
+    width: 300
   },
   lightText: {
     fontSize: 20,
